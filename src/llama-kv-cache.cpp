@@ -291,13 +291,15 @@ llama_kv_cache::llama_kv_cache(
         !attn_rot_disable &&
         n_embd_head_k_all > 0 &&
         ggml_is_quantized(type_k) &&
-        hparams.n_embd_head_k() % 64 == 0;
+        hparams.n_embd_head_k() % 64 == 0 &&
+        model.split_mode() != LLAMA_SPLIT_MODE_TENSOR;
 
     attn_rot_v =
         !attn_rot_disable &&
         n_embd_head_v_all > 0 &&
         ggml_is_quantized(type_v) &&
-        hparams.n_embd_head_v() % 64 == 0;
+        hparams.n_embd_head_v() % 64 == 0 &&
+        model.split_mode() != LLAMA_SPLIT_MODE_TENSOR;
 
     LLAMA_LOG_INFO("%s: attn_rot_k = %d, n_embd_head_k_all = %d\n", __func__, attn_rot_k, n_embd_head_k_all);
     LLAMA_LOG_INFO("%s: attn_rot_v = %d, n_embd_head_k_all = %d\n", __func__, attn_rot_v, n_embd_head_v_all);

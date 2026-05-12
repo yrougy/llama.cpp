@@ -605,10 +605,13 @@ struct ggml_backend_meta_split_state llama_meta_device_get_split_state(const str
 
             const int64_t granularity_kv = granularity_q / n_gqa;
             if (std::regex_match(tensor_name, pattern_kv_weight) ||
-                std::regex_match(tensor_name, pattern_kv_bias) ||
-                std::regex_match(tensor_name, pattern_kv_cache)) {
+                std::regex_match(tensor_name, pattern_kv_bias)) {
                 GGML_ASSERT(segments.size() == 1);
                 return {granularity_kv};
+            }
+            if (std::regex_match(tensor_name, pattern_kv_cache)) {
+                GGML_ASSERT(segments.size() == 1);
+                return {std::lcm(granularity_kv, blck_size)};
             }
             if (std::regex_match(tensor_name, pattern_qkv_weight) || std::regex_match(tensor_name, pattern_qkv_bias)) {
                 GGML_ASSERT(segments.size() == 3);
